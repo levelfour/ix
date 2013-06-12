@@ -2,7 +2,6 @@
 #define __SYNTAX_H__
 
 #include "token.h"
-#include "expr.h"
 
 class SyntaxTree {
 public:
@@ -15,7 +14,7 @@ public:
 	}
 
 	void parser(TokenArray *tokarray) {
-		tree = new Expr(tokarray, true);
+
 	}
 
 	int exec() {
@@ -23,7 +22,6 @@ public:
 	}
 
 private:
-	Expr *tree;
 
 };
 

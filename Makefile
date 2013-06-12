@@ -1,7 +1,7 @@
 CC=g++
 PROGRAM=main
-SRC=main.cpp token.cpp syntax.cpp expr.cpp
-HEADER=types.h token.h syntax.h expr.h
+SRC=main.cpp token.cpp syntax.cpp
+HEADER=token.h syntax.h
 DEBUG=-g -DDEBUG
 
 $(PROGRAM): $(SRC) $(HEADER)

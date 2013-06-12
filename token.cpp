@@ -64,7 +64,7 @@ TOKTYPE TokenArray::toktype(int i) {
 		}
         default:
 		{
-			for(int j = 0; j < OPERATOR_N; j++) {
+			for(int j = 0; j < OPERATION_N; j++) {
 				// recognize token as operator
 				if(_array[i] == op_tok[j]) return TOK_OPERATOR;
 			}

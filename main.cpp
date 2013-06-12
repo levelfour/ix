@@ -3,13 +3,21 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+
 #include "token.h"
 #include "syntax.h"
+
 using namespace std;
 
-bool getSrc(string &str);
-
 const char prompt[] = ">>> ";
+
+// get stream function
+bool getSrc(string& str) {
+	cout << prompt;
+	getline(cin, str);
+	if(str != "") return true;
+	return false;
+}
 
 int main() {
 	string src;				// user input source
@@ -37,12 +45,4 @@ int main() {
 	}
 
 	return 0;
-}
-
-// get stream function
-bool getSrc(string& str) {
-	cout << prompt;
-	getline(cin, str);
-	if(str != "") return true;
-	return false;
 }

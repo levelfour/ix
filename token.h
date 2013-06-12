@@ -4,19 +4,30 @@
 #include <cstdio>
 #include <string>
 #include <vector>
-#include "types.h"
 using namespace std;
-
-const int OPERATOR_N = 4;
-const char op_tok[OPERATOR_N][2] = {
-	"*","/","+","-"
+	
+enum TOKTYPE {
+	TOK_UNKNOWN = 0,
+	TOK_NUMBER,
+	TOK_IDENTIFIER,
+	TOK_OPERATOR,
+	TOK_STRING,
+};
+ 
+const int OPERATION_N = 4;
+const char op_tok[OPERATION_N][2] = {
+	"+","-","*","/"
 };
 
 class TokenArray {
 public:
-	TokenArray() {}
+	TokenArray() {
+        
+	}
     
-	~TokenArray() {}
+	~TokenArray() {
+        
+	}
     
 	void scanner(string src);
 	int tokenizer();
@@ -25,16 +36,6 @@ public:
 	void clear() {
 		_array.clear();
 		_type.clear();
-	}
-
-	int size() { return _array.size(); }
-
-	string str(int i) {
-		return _array[i];
-	}
-
-	TOKTYPE type(int i) {
-		return _type[i];
 	}
     
 #ifdef DEBUG
