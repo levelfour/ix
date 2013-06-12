@@ -20,7 +20,7 @@ class Term {
 public:
 	Term() {};
 	virtual ~Term() {};
-	virtual Term *evaluate() = 0;
+	virtual int evaluate() = 0;
 };
 
 // integer value term
@@ -28,8 +28,8 @@ class TermInt : public Term {
 public:
 	TermInt(int arg) : _integer(arg) {}
 	~TermInt() {}
-	Term *evaluate() {
-		return this;
+	int evaluate() {
+		return _integer;
 	}
 private:
 	int _integer;
@@ -62,8 +62,8 @@ FuncTbl func_tbl = {
 class TermOp : public Term {
 public:
 	TermOp();
-	Term *evaluate() {
-		return _tbl_[_type](_args[0], _args[1]);
+	int evaluate() {
+		return _tbl_[_type](_args[0], _args[1]).evaluate();
 	}
 private:
 	OPTYPE			_type;
