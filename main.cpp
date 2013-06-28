@@ -31,18 +31,22 @@ int main() {
 		try {
 			token.scanner(src);
 			token.tokenizer();
-			token.show();
 
 			syntax.parser(&token);
-			syntax.exec();
+			cout << "RESULT: " << syntax.exec() << endl;
 		} catch(const string err) {
 			cerr << err << endl;	
 		}
 
 		// finalizer
 		token.clear();
+		syntax.clear();
 		src.clear();
 	}
+	
+	// finalizer
+	token.clear();
+	src.clear();
 
 	return 0;
 }

@@ -9,6 +9,7 @@
 #include "types.h"
 using namespace std;
 
+class Expr;
 class Term;
 class TermInt;
 class TermOp;
@@ -20,117 +21,68 @@ class Term {
 public:
 	Term() {};
 	virtual ~Term() {};
-	virtual int evaluate() = 0;
+	virtual Term *evaluate() = 0;
+	virtual int value() { return 1; };
 };
 
 // integer value term
 class TermInt : public Term {
 public:
 	TermInt(int arg) : _integer(arg) {}
-	~TermInt() {}
-	int evaluate() {
-		return _integer;
+	TermInt(Term *term) {
+		//_integer = term->evaluate();
+		delete term;
 	}
+	~TermInt() {}
+	Term *evaluate() {
+		return this;
+	}
+	int value() { return _integer; }
 private:
 	int _integer;
 };
 
-typedef TermInt* (*op_func)(Term *op1, Term *op2);
+typedef TermInt* (*op_func)(Expr *op1, Expr *op2);
 typedef op_func FuncTbl[OPERATOR_N];
-
-TermInt *op_mul(Term *op1, Term *op2) {
-	return new TermInt(op1->evaluate() * op2->evaluate());
-}
-
-TermInt *op_div(Term *op1, Term *op2) {
-	return new TermInt(op1->evaluate() / op2->evaluate());
-}
-
-TermInt *op_add(Term *op1, Term *op2) {
-	return new TermInt(op1->evaluate() + op2->evaluate());
-}
-
-TermInt *op_sub(Term *op1, Term *op2) {
-	return new TermInt(op1->evaluate() - op2->evaluate());
-}
-
-FuncTbl func_tbl = {
-	op_mul, op_div, op_add, op_sub
-};
+extern FuncTbl func_tbl;
 
 // operator value term (reference to a new expression)
 class TermOp : public Term {
 public:
-	TermOp();
-	int evaluate() {
-		return _tbl_[_type](_args[0], _args[1]).evaluate();
+	TermOp(OPTYPE type, Expr *op1, Expr *op2) :_type(type) {
+		_args.push_back(op1); _args.push_back(op2);
+		//_tbl_ = func_tbl;
+	}
+	virtual ~TermOp() {
+		for(int i = 0; i < _args.size(); i++) {
+			cout << __func__ << ": delete" << endl;
+			//delete _args[i];
+		}
+	}
+	Term *evaluate() {
+		//return _tbl_[_type](_args[0], _args[1]);
 	}
 private:
 	OPTYPE			_type;
-	vector<Term*>	_args;
+	vector<Expr*>	_args;
 	static FuncTbl	_tbl_;
 };
 
 class Expr {
 public:
-	Expr(TokenArray *tokarray, bool is_root = false) {
-		vector<OPTYPE> optype;	// contain operator type
-		if(is_root) _parent = NULL;
-		// labeling operator type for all tokens
-		for(int i = 0; i < tokarray->size(); i++) {
-			// switch for token type
-			switch(tokarray->type(i)) {
-			case TOK_NUMBER:
-				optype.push_back(OP_NULL);
-				break;
-			case TOK_OPERATOR:
-				optype.push_back(getOpType(tokarray->str(i)));
-				break;
-			default:
-				throw string(__func__) + string(": unsupported token");
-			}
-		}
-
-		// reverse vector order
-		// in order to use max_element (max_element pick up element from front)
-		// vector must be evaluated from back
-		reverse(optype.begin(), optype.end());
-		// root is the most unprior term searched from back
-		int root = optype.size() - 1
-			- (max_element(optype.begin(), optype.end()) -optype.begin());
-		reverse(optype.begin(), optype.end());
-
-		_type = tokarray->type(root); // determine token type
-		switch(_type) {
-		case TOK_NUMBER:
-		{
-			int value; // instance value
-			stringstream ss;
-			ss << tokarray->str(root);
-			ss >> value;
-			_instance = new TermInt(value);
-			break;
-		}
-		case TOK_OPERATOR:
-			break;
-		default:
-			throw string(__func__) + string(": unsupported token");
-		}
-	}
-
+	Expr(TokenArray *tokarray, bool is_root = false);
 	virtual ~Expr() {
 		delete _parent;
-		delete _instance;
+		//delete _instance;
+	}
+	int evaluate() {
+		return _instance->value();
 	}
 
 private:
 	Expr		*_parent;	// parent of this expression
 	TOKTYPE		_type;		// token type
 	Term		*_instance;	// the instance of the term
-
-	TOKTYPE getType(string tok) {
-		return TOK_UNKNOWN;
-	}
 };
 
 #endif // __EXPR_H__
