@@ -6,37 +6,18 @@
 #include <vector>
 #include "types.h"
 using namespace std;
-	
-const int OPERATOR_N = 4;
-const char op_tok[OPERATOR_N][2] = {
-	"*","/","+","-"
-};
-
 
 class TokenArray {
 public:
 	TokenArray() {}
-	TokenArray(TokenArray *org, int begin, int end) {
-		for(int i = 0; i < end - begin; i++) {
-			_array.push_back(org->str(begin + i));
-			_type.push_back(org->type(begin + i));
-		}
-	}
-    
+	TokenArray(TokenArray *org, int begin, int end);
 	~TokenArray() {}
     
 	void scanner(string src);
 	int tokenizer();
+	TokenArray sub(int begin, int end);
+	void clear();
 
-	TokenArray sub(int begin, int end) {
-		return TokenArray(this, begin, end);
-	}
-    
-	// clear token data
-	void clear() {
-		_array.clear();
-		_type.clear();
-	}
 	int size() 			{ return _array.size(); }
 	string str(int i)	{ return _array[i]; }
 	TOKTYPE type(int i)	{ return _type[i]; }

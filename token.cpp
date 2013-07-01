@@ -1,4 +1,12 @@
 #include "token.h"
+#include "opr.h"
+
+TokenArray::TokenArray(TokenArray *org, int begin, int end) {
+	for(int i = 0; i < end - begin; i++) {
+		_array.push_back(org->str(begin + i));
+		_type.push_back(org->type(begin + i));
+	}
+}
 
 // scanner
 void TokenArray::scanner(string src) {
@@ -44,6 +52,17 @@ int TokenArray::tokenizer() {
 	}
         
 	return EXIT_SUCCESS;
+}
+
+// extract sub TokenArray
+TokenArray TokenArray::sub(int begin, int end) {
+	return TokenArray(this, begin, end);
+}
+
+// clear token data
+void TokenArray::clear() {
+	_array.clear();
+	_type.clear();
 }
 
 TOKTYPE TokenArray::toktype(int i) {

@@ -33,7 +33,7 @@ int main() {
 			token.tokenizer();
 
 			syntax.parser(&token);
-			cout << "RESULT: " << syntax.exec() << endl;
+			cout << syntax.exec() << endl;
 		} catch(const string err) {
 			cerr << err << endl;	
 		}

@@ -1,34 +1,9 @@
+#include <sstream>
 #include "expr.h"
-
-OPTYPE getOpType(string opstr) {
-	for(int i = 0; i < OPERATOR_N; i++) {
-		if(opstr == op_tok[i]) return (OPTYPE)i;
-	}
-}
-
-TermInt *op_mul(Expr *op1, Expr *op2) {
-	return new TermInt(op1->evaluate()// * op2->evaluate());
-	);
-}
-
-TermInt *op_div(Expr *op1, Expr *op2) {
-	return new TermInt(op1->evaluate()// / op2->evaluate());
-	);
-}
-
-TermInt *op_add(Expr *op1, Expr *op2) {
-	return new TermInt(op1->evaluate()// + op2->evaluate());
-	);
-}
-
-TermInt *op_sub(Expr *op1, Expr *op2) {
-	return new TermInt(op1->evaluate()// - op2->evaluate());
-	);
-}
-
-FuncTbl func_tbl = {
-	op_mul, op_div, op_add, op_sub
-};
+#include "token.h"
+#include "term.h"
+#include "opr.h"
+using namespace std;
 
 // Expr Constructor
 Expr::Expr(TokenArray *tokarray, bool is_root) {
@@ -74,6 +49,9 @@ Expr::Expr(TokenArray *tokarray, bool is_root) {
 	}
 	case TOK_OPERATOR:
 	{
+		if(root <= 0 || tokarray->size() < root) {
+			throw string(__func__) + (": out of range");
+		}
 		TokenArray tok_front = tokarray->sub(0, root);
 		TokenArray tok_back = tokarray->sub(root+1, tokarray->size());
 		Expr *op1 = new Expr(&tok_front);
@@ -84,4 +62,13 @@ Expr::Expr(TokenArray *tokarray, bool is_root) {
 	default:
 		throw string(__func__) + string(": unsupported token");
 	}
+}
+
+Expr::~Expr() {
+	delete _parent;
+	//delete _instance;
+}
+
+int Expr::evaluate() {
+	return _instance->evaluate();
 }
