@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include "expr.h"
+#include <opr.h>
 #include "types.h"
 
 OPTYPE getOpType(std::string opstr);
@@ -33,12 +34,12 @@ private:
 // operator value term (reference to a new expression)
 class TermOp : public Term {
 public:
-	TermOp(OPTYPE type, Expr *op1, Expr *op2);
+	TermOp(OpType type, Expr *op1, Expr *op2);
 	virtual ~TermOp();
 	int evaluate();
 
 private:
-	OPTYPE				_type;
+	OPTYPE _type;
 	std::vector<Expr*>	_args;
 };
 

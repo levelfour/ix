@@ -1,3 +1,4 @@
+#include <iostream>
 #include <sstream>
 #include "expr.h"
 #include "token.h"
@@ -7,20 +8,28 @@ using namespace std;
 
 // Expr Constructor
 Expr::Expr(TokenArray *tokarray, bool is_root) {
-	vector<OPTYPE> optype;	// contain operator type
+	// contain operator type
+	// use OpType when comparing priority
+	// and then discard OpType and use OPTYPE
+	vector<OpType> optype;	
 	if(is_root) _parent = NULL;
 	// labeling operator type for all tokens
 	for(int i = 0; i < tokarray->size(); i++) {
 		// switch for token type
 		switch(tokarray->type(i)) {
 		case TOK_NUMBER:
-			optype.push_back(OP_NULL);
+			optype.push_back(OpType(OP_NULL));
 			break;
 		case TOK_OPERATOR:
-			optype.push_back(getOpType(tokarray->str(i)));
+			optype.push_back(tokarray->str(i));
 			break;
+		case TOK_DELIMITER:
+			optype.push_back(OpType(OP_NULL));
+			//break;
+		case TOK_IDENTIFIER:
+			//break;
 		default:
-			throw string(__func__) + string(": unsupported token");
+			throw string(__func__) + string(": unsupported token(1)");
 		}
 	}
 
@@ -56,11 +65,11 @@ Expr::Expr(TokenArray *tokarray, bool is_root) {
 		TokenArray tok_back = tokarray->sub(root+1, tokarray->size());
 		Expr *op1 = new Expr(&tok_front);
 		Expr *op2 = new Expr(&tok_back);
-		_instance = new TermOp(optype[root], op1, op2);
+	_instance = new TermOp(optype[root], op1, op2);
 		break;
 	}
 	default:
-		throw string(__func__) + string(": unsupported token");
+		throw string(__func__) + string(": unsupported token(2)");
 	}
 }
 

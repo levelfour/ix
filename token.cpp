@@ -16,7 +16,7 @@ void TokenArray::scanner(string src) {
 		if(src[i] == ' ' || i == src.length() - 1){
 			// extract token from origin to current offset
 			_array.push_back(
-				src.substr(org, i - org + ((src[i] == ' ') ? 0 : 1))
+				src.substr(org, i - org + ((i == src.length() - 1) ? 1 : 0))
 			);
 			org = i + 1;
 		}
@@ -29,11 +29,15 @@ int TokenArray::tokenizer() {
 		throw string(__func__) + string(": unknown token");
 	_type.push_back(toktype(0));
     
+	int depth = 0;
+	if(_array[0] == ")") throw string(__func__) + string(": invalid delimiter ')'");
+	if(_array[0] == "(") depth++;
+
 	for(int i = 1 ; i < _array.size(); i++) {
 		// get the current token type
 		TOKTYPE cur_type = toktype(i);
         
-		// rules for each token types
+		// syntax rules for each token types
 		switch(cur_type) {
         case TOK_NUMBER:
         case TOK_IDENTIFIER:
@@ -43,6 +47,11 @@ int TokenArray::tokenizer() {
                throw string(__func__) + string(": expected ';'");
             else break;
         case TOK_OPERATOR:
+			break;
+		case TOK_DELIMITER:
+			if(_array[i] == "(") depth++;
+			else if(_array[i] == ")") depth--;
+			if(depth < 0) throw string(__func__) + string(": invalid delimiter(2)");
             break;
         case TOK_UNKNOWN:
             throw string(__func__) + string(": unknown token");
@@ -50,6 +59,8 @@ int TokenArray::tokenizer() {
         
 		_type.push_back(cur_type);
 	}
+
+	if(depth != 0) throw string(__func__) + string(": invalid delimiter(3)");
         
 	return EXIT_SUCCESS;
 }
@@ -73,6 +84,27 @@ TOKTYPE TokenArray::toktype(int i) {
             return TOK_IDENTIFIER;
         case '0'...'9':
             return TOK_NUMBER;
+		case '(':
+			if(i == 0) return TOK_DELIMITER;
+			else if(toktype(i - 1) == TOK_IDENTIFIER) return TOK_OPERATOR;
+			else return TOK_DELIMITER;
+		case ')':
+			{
+				int level = 1; // blace depth level
+				for(int j = i - 1; j >= 0; j--) {
+					if(_array[j][0] == ')')			level++;
+					else if(_array[j][0] == '(')	level--;
+					// if parallel left blace is func calling
+					if(level == 0) {
+						if(toktype(j) == TOK_OPERATOR) return TOK_OPERATOR;
+						else return TOK_DELIMITER;
+					}
+				}
+			}
+			// break throw
+		case '{':
+		case '}':
+			return TOK_DELIMITER;
         case '"':
         {
 			// find the endmark of string

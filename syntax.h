@@ -6,12 +6,15 @@
 
 class SyntaxTree {
 public:
-	SyntaxTree() {}
-	~SyntaxTree() { /*delete _tree;*/ }
+	SyntaxTree() : _tree(NULL) {}
+	~SyntaxTree() { delete _tree; }
 
 	void parser(TokenArray *tokarray) { _tree = new Expr(tokarray, true); }
 	int exec() { return _tree->evaluate(); }
-	void clear() { /*delete _tree;*/ }
+	void clear() {
+		delete _tree;
+		_tree = NULL;
+	}
 
 private:
 	Expr *_tree;

@@ -13,6 +13,7 @@ const char prompt[] = ">>> ";
 
 // get stream function
 bool getSrc(string& str) {
+	str.clear();
 	cout << prompt;
 	getline(cin, str);
 	if(str != "") return true;
@@ -31,6 +32,7 @@ int main() {
 		try {
 			token.scanner(src);
 			token.tokenizer();
+			//token.show();
 
 			syntax.parser(&token);
 			cout << syntax.exec() << endl;
@@ -41,12 +43,7 @@ int main() {
 		// finalizer
 		token.clear();
 		syntax.clear();
-		src.clear();
 	}
-	
-	// finalizer
-	token.clear();
-	src.clear();
 
 	return 0;
 }

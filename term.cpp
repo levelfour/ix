@@ -9,7 +9,7 @@ OPTYPE getOpType(string opstr) {
 	}
 }
 
-TermOp::TermOp(OPTYPE type, Expr *op1, Expr *op2) :_type(type) {
+TermOp::TermOp(OpType type, Expr *op1, Expr *op2) :_type(type.type()) {
 	_args.push_back(op1); _args.push_back(op2);
 }
 
